@@ -168,10 +168,16 @@ func (r *reporter) send() error {
 				for tk, tv := range r.tags {
 					these_tags[tk] = tv
 				}
+
 				these_tags["bucket"] = k
 
+				data, ok := v.(float64)
+				if !ok {
+					data = float64(v.(int64))
+				}
+
 				fields := map[string]interface{}{
-					fmt.Sprintf("%s.histogram", name): v,
+					fmt.Sprintf("%s.histogram", name): data,
 				}
 
 				pt, err := client.NewPoint(r.measurement, these_tags, fields, now)
@@ -198,8 +204,13 @@ func (r *reporter) send() error {
 				}
 				these_tags["bucket"] = k
 
+				data, ok := v.(float64)
+				if !ok {
+					data = float64(v.(int64))
+				}
+
 				fields := map[string]interface{}{
-					fmt.Sprintf("%s.meter", name): v,
+					fmt.Sprintf("%s.meter", name): data,
 				}
 
 				pt, err := client.NewPoint(r.measurement, these_tags, fields, now)
@@ -237,6 +248,7 @@ func (r *reporter) send() error {
 					these_tags[tk] = tv
 				}
 				these_tags["bucket"] = k
+
 				data, ok := v.(float64)
 				if !ok {
 					data = float64(v.(int64))
